@@ -1,0 +1,18 @@
+services:
+  web_app:
+    build: .
+    ports:
+      - "8000:8501"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /develop
+  mongo_db:
+    image: mongo
+    restart: always
+    ports:
+      - "8081:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: toor
