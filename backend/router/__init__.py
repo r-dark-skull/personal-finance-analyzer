@@ -2,7 +2,8 @@ import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from pymongo import MongoClient
-from .routes import router
+from .transaction_routes import router
+from .analysis_routes import router as analysis_router
 from server import context
 
 
@@ -19,6 +20,7 @@ async def lifespan(app: FastAPI):
     app.database = app.mongodb_client[os.getenv('MONGO_DATABASE')]
 
     app.include_router(router, prefix="/transactions")
+    app.include_router(analysis_router, prefix="/analysis")
 
     # server context
     context.update(
