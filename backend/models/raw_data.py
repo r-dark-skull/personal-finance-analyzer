@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 
 class RawEmail(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
-    sender: str
-    mail_body: str
+    sender: str = Field(alias='from')
+    mail_body: str = Field(alias="body")
     date: str
     is_analyzed: bool = Field(default=False)
     is_transaction: bool | None = Field(default=None)
