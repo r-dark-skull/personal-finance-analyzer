@@ -59,4 +59,7 @@ class EmailManager:
             )
             js_response['id'] = mail.id
 
-            print(Transaction(**js_response))
+            trx = jsonable_encoder(Transaction(**js_response))
+            server.context['database'][
+                os.getenv('TRANSACTION_COLLECTION')
+            ].insert_one(trx)
