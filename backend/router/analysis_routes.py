@@ -10,3 +10,9 @@ email_manager = EmailManager()
 async def save_emails(request: Request):
     status = await email_manager.fetch_and_save_emails()
     return {"status": "success" if status else "fail"}
+
+
+@router.get("/analyze_emails")
+async def analyse_emails(request: Request):
+    await email_manager.email_analyzer()
+    return {"status": "done"}

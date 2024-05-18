@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from datetime import date
 from enum import Enum
 
 
@@ -12,6 +13,8 @@ class Transaction(BaseModel):
     amount: float
     tx_type: TransactionType = Field(default=TransactionType.DEBIT)
     vendor: str
+    category: str
+    date: date
     vendor_id: str | None = Field(default=None)
 
     class Config:

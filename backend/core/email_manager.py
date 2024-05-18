@@ -1,15 +1,18 @@
+import json
 import os
 from fastapi.encoders import jsonable_encoder
 from datetime import datetime
 from .email_loader import GmailLoader
 import server
 from typing import List
-from models import RawEmail
+from models import RawEmail, Transaction
+from connections import OpenAiConnect
 
 
 class EmailManager:
     def __init__(self) -> None:
         self.__loader = GmailLoader()
+        self.ai_connect = OpenAiConnect()
 
     async def fetch_and_save_emails(self):
         try:
@@ -34,5 +37,26 @@ class EmailManager:
         except Exception as e:
             return False
 
+    async def __un_analyzed_mails(self) -> List[RawEmail]:
+        return [
+            RawEmail(**document)
+            for document in server.context.get('database')[
+                os.getenv('MAIL_COLLECTION')].find({
+                    "is_analyzed": False
+                })
+        ]
+
     async def email_analyzer(self):
-        ...
+        mails_to_analyze = await self.__un_analyzed_mails()
+
+        for mail in mails_to_analyze:
+            js_response = json.loads(
+                self.ai_connect.get_analysis(mail.mail_body)
+            )
+
+            js_response['date'] = datetime.strptime(
+                js_response['date'], "%Y-%m-%d"
+            )
+            js_response['id'] = mail.id
+
+            print(Transaction(**js_response))
