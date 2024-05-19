@@ -79,8 +79,6 @@ class GmailLoader:
             q=f"after:{filter_date} "
         ).execute()
 
-        print(mail_list)
-
         # creating task group
         futures = []
 
