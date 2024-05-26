@@ -2,7 +2,7 @@ services:
   user_interface:
     build: frontend
     ports:
-      - "8000:8501"
+      - "80:8501"
     develop:
       watch:
         - action: sync

@@ -1,3 +1,4 @@
+import os
 import json
 from typing import Any, Dict, List, Optional
 from google.auth.transport.requests import Request
@@ -8,10 +9,15 @@ from googleapiclient.errors import HttpError
 
 
 class Gmail:
-    def __init__(self, credentials: dict, scope: list, token: list) -> None:
+    def __init__(self, credentials: dict, scope: list, token: list = None) -> None:
         self.credentials = credentials
         self.scopes = scope
-        self.token = token
+        self.__token_location = token
+
+        if os.path.exists(token):
+            self.token = json.load(open(token, "r"))
+        else:
+            self.token = None
 
     def login(self):
         creds = None
@@ -30,6 +36,7 @@ class Gmail:
                 creds = flow.run_local_server(port=0)
 
             self.token = json.loads(creds.to_json())
+            json.dump(self.token, open(self.__token_location, "w"))
 
         return build("gmail", "v1", credentials=creds)
 

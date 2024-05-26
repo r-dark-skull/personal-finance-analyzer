@@ -15,7 +15,7 @@ class GmailLoader:
         self.gmail = Gmail(
             credentials=server.credentials['auth']['gmail']['credential'],
             scope=server.credentials['auth']['GMAIL_SCOPE'],
-            token=server.credentials['auth']['gmail']['token']
+            token=server.credentials['auth']['gmail']['token'],
         )
         self.__service = self.gmail.login()
 

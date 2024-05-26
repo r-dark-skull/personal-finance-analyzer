@@ -8,6 +8,10 @@ from typing import List
 from models import RawEmail, Transaction
 from connections import OpenAiConnect
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 
 class EmailManager:
     def __init__(self) -> None:
@@ -35,6 +39,7 @@ class EmailManager:
                     ].insert_one(email)
             return True
         except Exception as e:
+            logger.error(e)
             return False
 
     async def __un_analyzed_mails(self) -> List[RawEmail]:
