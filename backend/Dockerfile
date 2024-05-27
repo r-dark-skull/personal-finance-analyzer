@@ -3,6 +3,10 @@ FROM python:3.12.3-bullseye
 WORKDIR /develop
 COPY . .
 
+RUN apt-get update
+RUN apt-get install -y cron
+RUN chmod +x jobs/setup.sh
+
 # setting env variables
 ENV MONGO_URL_TEMPLATE=mongodb://{username}:{password}@{address}/?authMechanism=DEFAULT&retryWrites=true&w=majority
 ENV MONGO_USERNAME=root
