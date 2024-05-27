@@ -8,8 +8,8 @@ TRANSACTION_COLLECTION = os.getenv('TRANSACTION_COLLECTION')
 router = APIRouter()
 
 
-@router.get("/", response_model=List[Transaction], response_description="List of all Transactions")
-async def fetch_all_transactions(request: Request):
+@router.get("/{start}/{end}", response_model=List[Transaction], response_description="List of all Transactions")
+async def fetch_all_transactions(start: str, end: str, request: Request):
     transactions = list(
         request.app.database[TRANSACTION_COLLECTION].find(limit=100))
     return transactions
