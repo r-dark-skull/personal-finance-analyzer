@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 
 class RawEmail(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    id: str = Field(alias="_id")
     sender: str = Field(alias='from')
     mail_body: str = Field(alias="body")
     date: str
