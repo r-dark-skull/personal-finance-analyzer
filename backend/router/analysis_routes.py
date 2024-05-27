@@ -6,9 +6,10 @@ router = APIRouter()
 email_manager = EmailManager()
 
 
-@router.get("/save_emails_for/{date}", response_description="Triggers the Data Fetching endpoint")
-async def save_emails(date: str, request: Request):
-    status = await email_manager.fetch_and_save_emails(date)
+@router.get("/save_emails_for/{sdate}", response_description="Triggers the Data Fetching endpoint")
+@router.get("/save_emails_for/{sdate}/{edate}", response_description="Triggers the Data Fetching endpoint")
+async def save_emails(sdate: str, edate: str = None, request: Request = None):
+    status = await email_manager.fetch_and_save_emails(sdate, edate)
     return {"status": "success" if status else "fail"}
 
 
