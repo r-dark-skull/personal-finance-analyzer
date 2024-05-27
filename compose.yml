@@ -10,18 +10,14 @@ services:
           target: /develop
   server:
     build: backend
-    ports:
-      - "8080:5000"
     develop:
       watch:
         - action: sync
           path: backend
           target: /develop
-  mongo_db:
-    image: mongo
-    restart: always
-    ports:
-      - "8081:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: toor
+  # mongo_db:
+  #   image: mongo
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: toor
