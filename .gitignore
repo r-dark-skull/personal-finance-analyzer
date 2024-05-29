@@ -1,0 +1,9 @@
+venv/
+.git/
+*.toml
+**/*.toml
+*.pyc
+__pycache__/
+test/
+.DS_Store
+token.json

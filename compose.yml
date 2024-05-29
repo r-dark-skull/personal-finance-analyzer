@@ -1,0 +1,23 @@
+services:
+  user_interface:
+    build: frontend
+    ports:
+      - "80:8501"
+    develop:
+      watch:
+        - action: sync
+          path: frontend
+          target: /develop
+  server:
+    build: backend
+    develop:
+      watch:
+        - action: sync
+          path: backend
+          target: /develop
+  # mongo_db:
+  #   image: mongo
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: toor
