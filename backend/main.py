@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from router import create_app
 import logging
 

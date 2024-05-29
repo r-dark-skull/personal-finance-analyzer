@@ -1,11 +1,9 @@
 from uuid import uuid4
-from pydantic import BaseModel, Field
+from pydantic import Field
+from base import MongoDocument
 
 
-class CategoryStore(BaseModel):
+class CategoryStore(MongoDocument):
     id: str = Field(default_factory=uuid4, alias="_id")
     category: str
     vendor_id: str
-
-    class Config:
-        populate_by_name = True

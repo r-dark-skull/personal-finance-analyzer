@@ -6,10 +6,10 @@ from .email_loader import GmailLoader
 from pymongo.errors import DuplicateKeyError
 import server
 from typing import List
-from models import RawEmail, Transaction
 from connections import OpenAiConnect
 
 from logging import getLogger
+from models import RawEmail, Transaction
 
 logger = getLogger(__name__)
 
@@ -26,7 +26,7 @@ class EmailManager:
                 end_date=end_date
             )
 
-            logger.debug(f"Total Number of Emails to fetch : {len(emails)}")
+            logger.info(f"Total Number of Emails to fetch : {len(emails)}")
 
             for mail in emails:
 

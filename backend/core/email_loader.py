@@ -1,4 +1,3 @@
-import re
 import asyncio
 from connections import Gmail
 import server
