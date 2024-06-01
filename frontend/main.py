@@ -1,22 +1,13 @@
-from dotenv import load_dotenv
-load_dotenv()
-
+import asyncio
+import logging
 from controller import TxController
 from components import *
 import streamlit as st
-import pandas as pd
-from datetime import date
-import asyncio
-
-import logging
 
 
 logging.basicConfig(level=logging.INFO)
 
 tx_client = TxController()
-
-
-
 
 
 def header():
