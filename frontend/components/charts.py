@@ -1,9 +1,10 @@
+import pandas as pd
 from streamlit_echarts import st_echarts as ste
 import streamlit as st
+from server import context
 
 
-def get_chart_layout(title: str, data: list[dict]) -> dict:
-
+def get_pie_chart_layout(title: str, data: list[dict]) -> dict:
     return {
         "title": {
             "text": title,
@@ -17,23 +18,19 @@ def get_chart_layout(title: str, data: list[dict]) -> dict:
             "orient": 'vertical',
             "left": 'left'
         },
-        "visualMap": {
-            "show": False,
-            "min": 300,
-            "max": 1600,
-            "inRange": {
-                "color": ["#ffc40c", "#E74C3C", "#212F3D"]
-            }
-        },
         "series": [
             {
-                "name": 'Access From',
+                "name": title,
                 "type": 'pie',
-                "radius": '55%',
+                "radius": ["40%", "70%"],
+                "avoidLabelOverlap": True,
+                "itemStyle": {
+                },
+                "emphasis": {
+                    "label": {"show": True, "fontWeight": "bold"}
+                },
                 "selectedMode": 'multiple',
-                "center": ['50%', '50%'],
                 "data": data,
-                "roseType": 'radius',
                 "label": {
                     "formatter": ' {b}: {c} - {d}% ',
                 },
@@ -44,8 +41,6 @@ def get_chart_layout(title: str, data: list[dict]) -> dict:
                     "length": 10,
                     "length2": 20
                 },
-                "itemStyle": {
-                },
                 "animationType": 'scale',
                 "animationEasing": 'elasticOut'
             }
@@ -53,19 +48,64 @@ def get_chart_layout(title: str, data: list[dict]) -> dict:
     }
 
 
-async def weekly_chart(weekly_data: list[dict]):
+def get_line_chart_layout(title: str, dframe: pd.DataFrame, xaxis_label: str, yaxis_label: str):
+    return {
+        "title": {
+            "text": title,
+            "left": 'center',
+            "top": 20,
+        },
+        "tooltip": {
+            "trigger": 'item'
+        },
+        "legend": {
+            "orient": 'vertical',
+            "left": 'left'
+        },
+        "xAxis": {
+            "type": 'category',
+            "data": dframe[xaxis_label].tolist()
+        },
+        "yAxis": {
+            "type": 'value'
+        },
+        "series": [
+            {
+                "data": dframe[yaxis_label].tolist(),
+                "type": 'line'
+            }
+        ]
+    }
 
-    with st.container():
-        st.write("## Weekly Expense Chart")
 
-        chart_options = get_chart_layout("Weekly Expense", weekly_data)
-        ste(options=chart_options, height="600px")
+async def categorical_chart():
+    categorical_data: pd.DataFrame = context.get("catg_tsx")
+
+    if not categorical_data.empty:
+        with st.container():
+            st.write("## Categorical Expense")
+
+            chart_options = get_pie_chart_layout(
+                "Categorical Expense", categorical_data.to_dict(orient='records'))
+            ste(options=chart_options, height="600px")
 
 
-async def monthly_chart(monthly_data: list[dict]):
+async def daily_expenditure_chart():
+    daily_data: pd.DataFrame = context.get('daily_tsx')
+    daily_data.sort_values(by='name', ascending=True, inplace=True)
 
-    with st.container():
-        st.write("## Monthly Expense Chart")
+    daily_data["name"] = daily_data["name"].apply(
+        lambda x: x.strftime('%b %d')
+    )
 
-        chart_options = get_chart_layout("Monthly Expense", monthly_data)
-        ste(options=chart_options, height="600px")
+    if not daily_data.empty:
+        with st.container():
+            st.write("## Daily Expenditure Chart")
+
+            chart_options = get_line_chart_layout(
+                title="Daily Expenditure",
+                dframe=daily_data,
+                xaxis_label="name",
+                yaxis_label="value"
+            )
+            ste(options=chart_options, height="600px")

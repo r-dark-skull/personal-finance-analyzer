@@ -1,10 +1,22 @@
+from dotenv import load_dotenv
+load_dotenv()
 
-import asyncio
-import json
-import pandas as pd
-import streamlit as st
+from controller import TxController
 from components import *
-from controller import apply_aggrigations, data_requester
+import streamlit as st
+import pandas as pd
+from datetime import date
+import asyncio
+
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
+
+tx_client = TxController()
+
+
+
 
 
 def header():
@@ -14,14 +26,12 @@ def header():
 async def run():
     header()
 
-    date_filters = await render_side_nav()
-
-    metrics_data, weekly_data, monthly_data, transactional_data = await apply_aggrigations(date_filters)
-
-    await display_metrics(metrics_data)
-    await weekly_chart(weekly_data)
-    await monthly_chart(monthly_data)
-    await transaction_table(transactional_data)
+    filter = await render_side_nav()
+    await tx_client.set_date_range(*filter)
+    await display_metrics()
+    await categorical_chart()
+    await daily_expenditure_chart()
+    await transaction_table()
 
 
 asyncio.run(run())
