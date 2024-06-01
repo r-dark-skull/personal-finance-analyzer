@@ -117,6 +117,8 @@ class GmailLoader:
         filter_string = f"after:{start_date} before:{end_date}" \
             if end_date else f"after: {start_date}"
 
+        logger.info(f"Filter Options : {filter_string}")
+
         while nextPageToken is not None:
             resp = self.__service.users().messages().list(
                 userId=self.__user_id,
@@ -129,7 +131,7 @@ class GmailLoader:
             nextPageToken = resp.get('nextPageToken')
             # nextPageToken = None
 
-        logger.debug(f"Total Number of Mails : {len(mail_list)}")
+        logger.info(f"Total Number of Mails : {len(mail_list)}")
         logger.debug(f"Mail Ids: {mail_list}")
 
         # creating task group
@@ -148,4 +150,10 @@ class GmailLoader:
             )
             raise e
 
-        return [task.result() for task in futures if task.result() is not None]
+        results = [
+            task.result()
+            for task in futures if task.result() is not None
+        ]
+
+        logger.info(f"Fetched {len(results)} mails to process.")
+        return results

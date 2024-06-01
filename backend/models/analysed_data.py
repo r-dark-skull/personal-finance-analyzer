@@ -17,3 +17,4 @@ class Transaction(MongoDocument):
     category: str | None = Field(default=None)
     date: datetime | None = Field(default=None)
     vendor_id: str | None = Field(default=None)
+    is_deleted: bool = Field(default=False)

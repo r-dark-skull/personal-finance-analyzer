@@ -37,12 +37,8 @@ class EmailManager:
                     server.credentials.get('info').get('financial_services')
                 ):
 
-                    email = jsonable_encoder(mail)
-
                     try:
-                        server.context['database'][
-                            os.getenv('MAIL_COLLECTION')
-                        ].insert_one(email)
+                        mail.insert()
                     except DuplicateKeyError as exp:
                         logger.error(exp)
             return True
@@ -51,13 +47,7 @@ class EmailManager:
             return False
 
     async def __un_analyzed_mails(self) -> List[RawEmail]:
-        return [
-            RawEmail(**document)
-            for document in server.context.get('database')[
-                os.getenv('MAIL_COLLECTION')].find({
-                    "is_analyzed": False
-                })
-        ]
+        return RawEmail.find({"is_analyzed": False})
 
     # async def categorizer(self, js_response: dict) -> str | None:
 
@@ -75,7 +65,6 @@ class EmailManager:
         mails_to_analyze = await self.__un_analyzed_mails()
 
         for mail in mails_to_analyze:
-
             try:
                 js_response = json.loads(
                     self.ai_connect.get_analysis(mail.mail_body)
@@ -88,24 +77,12 @@ class EmailManager:
                     )
                     js_response['id'] = mail.id
 
-                    # getting and saving category
-                    # category = await self.email_analyzer(js_response)
+                    trx = Transaction(**js_response)
+                    trx.insert()
 
-                    trx = jsonable_encoder(Transaction(**js_response))
-                    server.context['database'][
-                        os.getenv('TRANSACTION_COLLECTION')
-                    ].insert_one(trx)
+                mail.is_analyzed = True
+                mail.update()
 
-                server.context['database'][os.getenv('MAIL_COLLECTION')].update_one(
-                    {
-                        "_id": mail.id
-                    },
-                    {
-                        "$set": {
-                            "is_analyzed": True
-                        }
-                    }
-                )
             except Exception as e:
                 logger.error(f"Error for Mail ID : {mail.id}")
                 logger.error(e)
